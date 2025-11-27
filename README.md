@@ -1,5 +1,7 @@
 # Windows11 Shared Workstation Hardening
 
+![Windows 11 shared workstation Hardening](images/logo.png)
+
 This repository contains our final project for the **Computer System Exploitation** course.  
 It uses **PowerShell** to harden the security of a fictional roofing company, **SecurePro**, which operates in a **non-standard multi-user, single-endpoint environment** where all employees share one **Windows 11** workstation.
 
