@@ -1,4 +1,4 @@
-# Windows11 Shared Workstation Hardening
+# Windows 11 Shared Workstation Hardening
 
 ![Windows 11 shared workstation Hardening](images/logo.png)
 
