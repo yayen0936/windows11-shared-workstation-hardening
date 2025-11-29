@@ -1,9 +1,9 @@
-# -----------------------------
+# =============================
 # Pre-Checks
-# -----------------------------
+# =============================
 function Test-RunAsAdmin {
     $principal = New-Object Security.Principal.WindowsPrincipal(
-    [Security.Principal.WindowsIdentity]::GetCurrent()
+        [Security.Principal.WindowsIdentity]::GetCurrent()
     )
 
     if (-not $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
@@ -11,9 +11,17 @@ function Test-RunAsAdmin {
         exit 1
     }
 }
-# -----------------------------
-# Menu function
-# -----------------------------
+
+# =============================
+# Load submenu scripts
+# =============================
+. "$PSScriptRoot\submenu\ComputerConfig.ps1"
+. "$PSScriptRoot\submenu\UserConfig.ps1"
+. "$PSScriptRoot\submenu\FileSystem.ps1"
+
+# =============================
+# Main menu function
+# =============================
 function Show-MainMenu {
     Clear-Host
     Write-Host "Windows 11 Shared Workstation Hardening" -ForegroundColor Cyan
@@ -25,56 +33,14 @@ function Show-MainMenu {
     Write-Host ""
 }
 
-# -----------------------------
-# Sub-Menus
-# -----------------------------
-function Show-ComputerConfigPolicies {
-    Clear-Host
-    Write-Host "[Computer Configuration Policies]" -ForegroundColor Green
-    Write-Host "-----------------------------------"
-    Write-Host "1) Account & Password Policy"
-    Write-Host "2) Local Accounts & Logon Settings"
-    Write-Host "3) System Hardening & Encryption"
-    Write-Host "4) Network, Firewall & Remote Access"
-    Write-Host "5) Back to Main Menu"
-    Write-Host ""
-    Read-Host "Press ENTER to return to the main menu" | Out-Null
-}
-
-function Show-UserConfigPolicies {
-    Clear-Host
-    Write-Host "[User Configuration Policies]" -ForegroundColor Green
-    Write-Host "-----------------------------------"
-    Write-Host "1) Session Lock & Screensaver"
-    Write-Host "2) Control Panel & Settings Restrictions"
-    Write-Host "3) Software Installation Restrictions"
-    Write-Host "4) Back to Main Menu"
-    Write-Host ""
-    Read-Host "Press ENTER to return to the main menu" | Out-Null
-}
-
-function Show-FileSystem {
-    Clear-Host
-    Write-Host "[File System & Data Access Controls]" -ForegroundColor Green
-    Write-Host "-----------------------------------"
-    Write-Host "1) Set NTFS permissions role-based local groups"
-    Write-Host "2) Remove inheritance"
-    Write-Host "3) Remove propagation"
-    Write-Host "3) Remove propagation"
-    Write-Host "4) Remove SMB shares"
-    Write-Host "5) Back to Main Menu"
-    Write-Host ""
-    Read-Host "Press ENTER to return to the main menu" | Out-Null
-}
-
-# -----------------------------
-# Main loop
-# -----------------------------
+# =============================
+# Main script
+# =============================
 
 # Run Pre-Checks
 Test-RunAsAdmin
 
-# Menu Display
+# Main Menu loop
 do {
     Show-MainMenu
     $choice = Read-Host "Select an option"
