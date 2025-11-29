@@ -11,25 +11,6 @@ function Test-RunAsAdmin {
         exit 1
     }
 }
-
-function Test-ExecutionPolicy {
-    try {
-        $currentUserPolicy = Get-ExecutionPolicy -Scope CurrentUser -ErrorAction SilentlyContinue
-        if ($currentUserPolicy -ne 'RemoteSigned') {
-            Write-Host "Setting execution policy for CurrentUser to 'RemoteSigned'..." -ForegroundColor Yellow
-            Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force -ErrorAction Stop
-            Write-Host "Execution policy for CurrentUser is now 'RemoteSigned'." -ForegroundColor Green
-        }
-        else {
-            Write-Host "Execution policy for CurrentUser is already 'RemoteSigned'." -ForegroundColor Green
-        }
-    }
-    catch {
-        Write-Error "Failed to set execution policy. Cannot continue safely. Error: $($_.Exception.Message)"
-        exit 1
-    }
-}
-
 # -----------------------------
 # Menu function
 # -----------------------------
@@ -74,7 +55,6 @@ function Invoke-FileSystemDataAccessControls {
 
 # Run Pre-Checks
 Test-RunAsAdmin
-Test-ExecutionPolicy
 
 # Menu Display
 do {
