@@ -41,10 +41,10 @@ The goal is to apply **30 unique security controls** to this shared workstation,
 
 | User         | Role                  | Local Group       |
 |--------------|-----------------------|-------------------|
-| David Chen   | Head Bookkeeper       | `Finance`      |
-| Priya Sharma | Payroll Administrator | `Finance`      |
-| Arthur Jenkins | Office Manager      | `Finance`      |
-| Elena Popa   | Financial Assistant   | `Finance`      |
+| David Chen   | Head Bookkeeper       | `Finance_Administration`      |
+| Priya Sharma | Payroll Administrator | `Finance_Administration`      |
+| Arthur Jenkins | Office Manager      | `Finance_Administration`      |
+| Elena Popa   | Financial Assistant   | `Finance_Administration`      |
 
 ### Operations & Sales
 
@@ -59,7 +59,7 @@ The goal is to apply **30 unique security controls** to this shared workstation,
 
 | User            | Role          | Local Group      |
 |-----------------|---------------|------------------|
-| Bobby Bojangles | IT Everything | `IT_Admins`   |
+| Bobby Bojangles | IT Everything | `IT`   |
 
 ---
 
@@ -71,7 +71,7 @@ The script will create and use the following **local security groups** on the Wi
   - Estimators, designers, and client liaison  
   - Primary access to **Active Jobs**, relevant **Sales/Marketing** assets, and read-only access to shared resources.
 
-- `Finance`  
+- `Finance_Administration`  
   - Bookkeeping, payroll, financial assistant, office manager  
   - Exclusive access to **Finance** and **HR/Employee_Files** data; additional access to financial archives.
 
@@ -79,11 +79,11 @@ The script will create and use the following **local security groups** on the Wi
   - Operations manager, sales lead, inventory, sales support  
   - Access to **Active Jobs**, **Sales & Marketing**, and **Operations** data.
 
-- `IT_Admins`  
+- `IT`  
   - IT-only admin group (Bobby)  
   - Member of local **Administrators** used only for system administration and hardening tasks.
 
-User accounts will be **standard users** by default, with **only `IT_Admins` granted administrative rights**, enforcing the **principle of least privilege** on the shared workstation.
+User accounts will be **standard users** by default, with **only `IT` granted administrative rights**, enforcing the **principle of least privilege** on the shared workstation.
 
 ---
 
