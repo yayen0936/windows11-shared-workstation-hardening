@@ -57,10 +57,12 @@ function Show-FileSystem {
     Clear-Host
     Write-Host "[File System & Data Access Controls]" -ForegroundColor Green
     Write-Host "-----------------------------------"
-    Write-Host "1) test"
-    Write-Host "2) test"
-    Write-Host "3) test"
-    Write-Host "4) Back to Main Menu"
+    Write-Host "1) Set NTFS permissions role-based local groups"
+    Write-Host "2) Remove inheritance"
+    Write-Host "3) Remove propagation"
+    Write-Host "3) Remove propagation"
+    Write-Host "4) Remove SMB shares"
+    Write-Host "5) Back to Main Menu"
     Write-Host ""
     Read-Host "Press ENTER to return to the main menu" | Out-Null
 }
