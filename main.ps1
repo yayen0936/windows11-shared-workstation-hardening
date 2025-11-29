@@ -44,6 +44,11 @@ function Show-ComputerConfigPolicies {
 function Show-UserConfigPolicies {
     Clear-Host
     Write-Host "[User Configuration Policies]" -ForegroundColor Green
+    Write-Host "-----------------------------------"
+    Write-Host "1) Session Lock & Screensaver"
+    Write-Host "2) Control Panel & Settings Restrictions"
+    Write-Host "3) Software Installation Restrictions"
+    Write-Host "4) Back to Main Menu"
     Write-Host ""
     Read-Host "Press ENTER to return to the main menu" | Out-Null
 }
@@ -51,6 +56,11 @@ function Show-UserConfigPolicies {
 function Show-FileSystem {
     Clear-Host
     Write-Host "[File System & Data Access Controls]" -ForegroundColor Green
+    Write-Host "-----------------------------------"
+    Write-Host "1) test"
+    Write-Host "2) test"
+    Write-Host "3) test"
+    Write-Host "4) Back to Main Menu"
     Write-Host ""
     Read-Host "Press ENTER to return to the main menu" | Out-Null
 }
