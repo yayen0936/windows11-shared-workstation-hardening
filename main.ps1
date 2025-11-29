@@ -28,21 +28,27 @@ function Show-MainMenu {
 # -----------------------------
 # Sub-Menus
 # -----------------------------
-function Invoke-ComputerConfigurationPolicies {
+function Show-ComputerConfigPolicies {
     Clear-Host
     Write-Host "[Computer Configuration Policies]" -ForegroundColor Green
+    Write-Host "-----------------------------------"
+    Write-Host "1) Account & Password Policy"
+    Write-Host "2) Local Accounts & Logon Settings"
+    Write-Host "3) System Hardening & Encryption"
+    Write-Host "4) Network, Firewall & Remote Access"
+    Write-Host "5) Back to Main Menu"
     Write-Host ""
     Read-Host "Press ENTER to return to the main menu" | Out-Null
 }
 
-function Invoke-UserConfigurationPolicies {
+function Show-UserConfigPolicies {
     Clear-Host
     Write-Host "[User Configuration Policies]" -ForegroundColor Green
     Write-Host ""
     Read-Host "Press ENTER to return to the main menu" | Out-Null
 }
 
-function Invoke-FileSystemDataAccessControls {
+function Show-FileSystem {
     Clear-Host
     Write-Host "[File System & Data Access Controls]" -ForegroundColor Green
     Write-Host ""
@@ -62,9 +68,9 @@ do {
     $choice = Read-Host "Select an option"
 
     switch ($choice) {
-        '1' { Invoke-ComputerConfigurationPolicies }
-        '2' { Invoke-UserConfigurationPolicies }
-        '3' { Invoke-FileSystemDataAccessControls }
+        '1' { Show-ComputerConfigPolicies }
+        '2' { Show-UserConfigPolicies }
+        '3' { Show-FileSystem }
         '0' { Write-Host "Exiting..." -ForegroundColor Yellow }
         default {
             Write-Host "Invalid selection. Please try again." -ForegroundColor Red
