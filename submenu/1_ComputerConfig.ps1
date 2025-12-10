@@ -33,7 +33,7 @@ function Show-AccountPasswordPolicy {
                 Write-Host "TODO: Apply all account & password policy settings" -ForegroundColor Yellow
                 Read-Host "Press ENTER to return to the Account & Password Policy menu" | Out-Null
             }
-            '0' { } # Back
+            '0' { }
             default {
                 Write-Host "Invalid selection. Please try again." -ForegroundColor Red
                 Start-Sleep -Seconds 1
@@ -71,7 +71,7 @@ function Show-ComputerConfigPolicies {
                 Write-Host "TODO: Network, Firewall & Remote Access" -ForegroundColor Yellow
                 Read-Host "Press ENTER to return to the Computer Configuration menu" | Out-Null
             }
-            '0' { } # Back
+            '0' { } 
             default {
                 Write-Host "Invalid selection. Please try again." -ForegroundColor Red
                 Start-Sleep -Seconds 1

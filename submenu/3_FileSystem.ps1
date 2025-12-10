@@ -33,7 +33,7 @@ function Show-FileSystem {
                 Write-Host "TODO: Remove SMB shares for SecurePro data folders" -ForegroundColor Yellow
                 Read-Host "Press ENTER to return to the File System menu" | Out-Null
             }
-            '0' { } # Back
+            '0' { } 
             default {
                 Write-Host "Invalid selection. Please try again." -ForegroundColor Red
                 Start-Sleep -Seconds 1

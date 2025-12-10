@@ -28,7 +28,7 @@ function Show-UserConfigPolicies {
                 Write-Host "TODO: Configure software installation restrictions" -ForegroundColor Yellow
                 Read-Host "Press ENTER to return to the User Configuration menu" | Out-Null
             }
-            '0' { } # Back
+            '0' { } 
             default {
                 Write-Host "Invalid selection. Please try again." -ForegroundColor Red
                 Start-Sleep -Seconds 1
