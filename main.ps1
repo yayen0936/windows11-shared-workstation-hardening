@@ -15,9 +15,9 @@ function Test-RunAsAdmin {
 # =============================
 # Load submenu scripts
 # =============================
-. "$PSScriptRoot\submenu\ComputerConfig.ps1"
-. "$PSScriptRoot\submenu\UserConfig.ps1"
-. "$PSScriptRoot\submenu\FileSystem.ps1"
+. "$PSScriptRoot\submenu\1_ComputerConfig.ps1"
+. "$PSScriptRoot\submenu\2_UserConfig.ps1"
+. "$PSScriptRoot\submenu\3_FileSystem.ps1"
 
 # =============================
 # Main menu function
