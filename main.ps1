@@ -15,8 +15,8 @@ function Test-RunAsAdmin {
 # =============================
 # Load submenu scripts
 # =============================
-. "$PSScriptRoot\submenu\1_ComputerConfig.ps1"
-. "$PSScriptRoot\submenu\2_UserConfig.ps1"
+. "$PSScriptRoot\submenu\1_ComputerConfiguration.ps1"
+. "$PSScriptRoot\submenu\2_UserConfiguration.ps1"
 . "$PSScriptRoot\submenu\3_FileSystem.ps1"
 
 # =============================
@@ -26,8 +26,8 @@ function Show-MainMenu {
     Clear-Host
     Write-Host "Windows 11 Shared Workstation Hardening" -ForegroundColor Cyan
     Write-Host "-------------------------------------------------"
-    Write-Host "1) Computer Configuration Policies"
-    Write-Host "2) User Configuration Policies"
+    Write-Host "1) Computer Configuration"
+    Write-Host "2) User Configuration"
     Write-Host "3) File System & Data Access Controls"
     Write-Host "0) Exit"
     Write-Host ""
@@ -46,9 +46,9 @@ do {
     $choice = Read-Host "Select an option"
 
     switch ($choice) {
-        '1' { Show-ComputerConfigPolicies }
-        '2' { Show-UserConfigPolicies }
-        '3' { Show-FileSystem }
+        '1' { Invoke-ComputerConfig }
+        '2' { Show-UserConfigMenu }
+        '3' { Show-FileSystemMenu }
         '0' { Write-Host "Exiting..." -ForegroundColor Yellow }
         default {
             Write-Host "Invalid selection. Please try again." -ForegroundColor Red
