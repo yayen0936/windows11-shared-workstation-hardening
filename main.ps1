@@ -21,7 +21,7 @@ function Show-MainMenu {
 function Show-ComputerConfigMenu {
     Clear-Host
     Write-Host "============================================="
-    Write-Host "        Computer Configuration"     -ForegroundColor Green
+    Write-Host "        Computer Configuration" -ForegroundColor Green
     Write-Host "============================================="
     Write-Host ""
     Write-Host "  1  - Strong local password policy"
@@ -53,7 +53,7 @@ function Show-ComputerConfigMenu {
 function Show-UserConfigMenu {
     Clear-Host
     Write-Host "============================================="
-    Write-Host "            User Configuration"     -ForegroundColor Green
+    Write-Host "            User Configuration" -ForegroundColor Green
     Write-Host "============================================="
     Write-Host ""
     Write-Host "  19 - Restrict Control Panel and Settings"
@@ -75,7 +75,7 @@ function Show-UserConfigMenu {
 function Show-FileFolderMenu {
     Clear-Host
     Write-Host "============================================="
-    Write-Host "          File and Folder Structure"    -ForegroundColor Green
+    Write-Host "          File and Folder Structure" -ForegroundColor Green
     Write-Host "============================================="
     Write-Host ""
     Write-Host "  27 - Group-based access model (RBAC)"
@@ -95,43 +95,48 @@ function Process-Selection {
 
     switch ($choice) {
 
-        # Computer Config
-        "1"  { "Selected: Strong local password policy" }
-        "2"  { "Selected: Account lockout policy" }
-        "3"  { "Selected: Minimize local Administrators group" }
-        "4"  { "Selected: Harden built-in accounts" }
-        "5"  { "Selected: Secure logon options" }
-        "6"  { "Selected: Strong User Account Control" }
-        "7"  { "Selected: Automatic OS patching" }
-        "8"  { "Selected: Endpoint protection (Defender)" }
-        "9"  { "Selected: SmartScreen protection" }
-        "10" { "Selected: Windows Firewall baseline" }
-        "11" { "Selected: Secure or disable remote access" }
-        "12" { "Selected: BitLocker encryption" }
-        "13" { "Selected: USB/removable media controls" }
-        "14" { "Selected: Disable unnecessary services" }
-        "15" { "Selected: Disable AutoRun/AutoPlay" }
-        "16" { "Selected: Audit policy & log retention" }
-        "17" { "Selected: Application control (AppLocker/WDAC)" }
-        "18" { "Selected: BIOS/UEFI and boot security" }
+        # COMPUTER CONFIG (1)
+        "1" {
+            . "$PSScriptRoot\src\1_Set-StrongLocalPasswordPolicy.ps1"
+            return "Applied: Strong local password policy"
+        }
 
-        # User Config
-        "19" { "Selected: Restrict Control Panel/Settings" }
-        "20" { "Selected: Lock Start menu and taskbar" }
-        "21" { "Selected: Block cmd, PowerShell, regedit" }
-        "22" { "Selected: Screen saver & idle timeout" }
-        "23" { "Selected: Restrict drive visibility" }
-        "24" { "Selected: Harden browser settings" }
-        "25" { "Selected: Logon/logoff scripts" }
-        "26" { "Selected: Disable Microsoft Store" }
+        # Other items not yet implemented
+        "2"  { return "Selected: Account lockout policy (not implemented yet)" }
+        "3"  { return "Selected: Minimize local Administrators group" }
+        "4"  { return "Selected: Harden built-in accounts" }
+        "5"  { return "Selected: Secure logon options" }
+        "6"  { return "Selected: UAC hardening" }
+        "7"  { return "Selected: Automatic Windows patching" }
+        "8"  { return "Selected: Endpoint protection" }
+        "9"  { return "Selected: SmartScreen protection" }
+        "10" { return "Selected: Windows Firewall baseline" }
+        "11" { return "Selected: Secure remote access" }
+        "12" { return "Selected: BitLocker encryption" }
+        "13" { return "Selected: USB control" }
+        "14" { return "Selected: Disable unnecessary services" }
+        "15" { return "Selected: Disable AutoRun/AutoPlay" }
+        "16" { return "Selected: Audit policy & logs" }
+        "17" { return "Selected: Application control" }
+        "18" { return "Selected: BIOS/UEFI boot security" }
 
-        # File & Folder
-        "27" { "Selected: RBAC model" }
-        "28" { "Selected: Least privilege NTFS" }
-        "29" { "Selected: Folder ACL inheritance" }
-        "30" { "Selected: File access auditing" }
+        # USER CONFIG
+        "19" { return "Selected: Restrict Control Panel" }
+        "20" { return "Selected: Lock Start menu/taskbar" }
+        "21" { return "Selected: Block system tools" }
+        "22" { return "Selected: Screen saver & idle timeout" }
+        "23" { return "Selected: Restrict drive access" }
+        "24" { return "Selected: Browser hardening" }
+        "25" { return "Selected: Logon/logoff scripts" }
+        "26" { return "Selected: Disable Microsoft Store" }
 
-        default { "Invalid selection" }
+        # FILE & FOLDER STRUCTURE
+        "27" { return "Selected: RBAC access model" }
+        "28" { return "Selected: Least privilege NTFS" }
+        "29" { return "Selected: Controlled folder inheritance" }
+        "30" { return "Selected: File access auditing" }
+
+        default { return "Invalid selection" }
     }
 }
 
@@ -182,8 +187,6 @@ while ($true) {
         }
 
         "Q" { return }
-        "q" { return }
-
         default {
             Write-Host "Invalid selection." -ForegroundColor Red
             Pause
