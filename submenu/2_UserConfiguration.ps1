@@ -2,7 +2,7 @@
 # User Configuration submenu
 # =============================
 
-function Show-UserConfigPolicies {
+function Show-UserConfigMenu {
     do {
         Clear-Host
         Write-Host "[User Configuration Policies]" -ForegroundColor Green
