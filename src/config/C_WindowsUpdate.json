@@ -1,7 +1,0 @@
-{
-  "AutomaticUpdatesOption": 4,
-  "ScheduledInstallDay": 0,
-  "ScheduledInstallTime": "03:00",
-  "NoAutoRebootWithLoggedOnUsers": true,
-  "UpdateSource": "WindowsUpdate"
-}
