@@ -1,0 +1,5 @@
+{
+  "LockoutThreshold": 5,
+  "LockoutDurationMinutes": 15,
+  "ResetCounterAfterMinutes": 15
+}

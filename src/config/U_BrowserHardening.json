@@ -1,0 +1,18 @@
+{
+  "Browser": "Edge",
+  "HomePage": "https://intranet.example.local",
+  "ShowHomeButton": true,
+  "SmartScreenEnabled": true,
+  "TrackingPreventionLevel": "Balanced",
+  "BlockThirdPartyCookies": true,
+  "DisallowedExtensions": [
+    "bad-extension-id-1",
+    "bad-extension-id-2"
+  ],
+  "Proxy": {
+    "Enabled": true,
+    "Server": "proxy.example.local:8080",
+    "BypassLocal": true,
+    "UserChangeAllowed": false
+  }
+}

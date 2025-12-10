@@ -1,0 +1,41 @@
+{
+  "DataRoot": "D:\\Data",
+  "Groups": {
+    "HR_RW": "Human Resources – read/write",
+    "HR_RO": "Human Resources – read-only",
+    "IT_RW": "IT – read/write",
+    "IT_RO": "IT – read-only"
+  },
+  "Folders": [
+    {
+      "Path": "D:\\Data\\HR",
+      "Inheritance": false,
+      "Acl": [
+        { "Group": "HR_RW", "Rights": "Modify" },
+        { "Group": "HR_RO", "Rights": "ReadAndExecute" }
+      ],
+      "Audit": [
+        {
+          "Group": "HR_RW",
+          "Rights": "Write,Delete",
+          "AuditFlags": "Success,Failure"
+        }
+      ]
+    },
+    {
+      "Path": "D:\\Data\\IT",
+      "Inheritance": false,
+      "Acl": [
+        { "Group": "IT_RW", "Rights": "Modify" },
+        { "Group": "IT_RO", "Rights": "ReadAndExecute" }
+      ],
+      "Audit": [
+        {
+          "Group": "IT_RW",
+          "Rights": "Write,Delete",
+          "AuditFlags": "Success,Failure"
+        }
+      ]
+    }
+  ]
+}
