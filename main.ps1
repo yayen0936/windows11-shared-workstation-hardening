@@ -7,11 +7,11 @@ function Show-MainMenu {
     Write-Host "        Workstation Security Hardening" -ForegroundColor Cyan
     Write-Host "============================================="
     Write-Host ""
-    Write-Host "1) Computer Configuration"
-    Write-Host "2) User Configuration"
-    Write-Host "3) File and Folder Structure"
+    Write-Host "1)  Computer Configuration"
+    Write-Host "2)  User Configuration"
+    Write-Host "3)  File and Folder Structure"
     Write-Host ""
-    Write-Host "Q) Quit"
+    Write-Host "Q)  Quit"
     Write-Host ""
 }
 
@@ -26,24 +26,24 @@ function Show-ComputerConfigMenu {
     Write-Host ""
     Write-Host "  1  - Strong local password policy"
     Write-Host "  2  - Account lockout policy"
-    Write-Host "  3  - Minimize local Administrators group"
+    Write-Host "  3  - Local admin group minimization"
     Write-Host "  4  - Harden built-in accounts"
     Write-Host "  5  - Secure logon options"
-    Write-Host "  6  - Strong User Account Control (UAC)"
-    Write-Host "  7  - Automatic OS patching (Windows Update)"
-    Write-Host "  8  - Endpoint protection (Microsoft Defender)"
-    Write-Host "  9  - SmartScreen / reputation protection"
+    Write-Host "  6  - Strong UAC configuration"
+    Write-Host "  7  - Enforce automatic OS patching"
+    Write-Host "  8  - Endpoint protection (Defender)"
+    Write-Host "  9  - SmartScreen & reputation protection"
     Write-Host "  10 - Windows Firewall baseline"
-    Write-Host "  11 - Secure or disable remote access (RDP/WinRM)"
+    Write-Host "  11 - Secure remote access (RDP/WinRM)"
     Write-Host "  12 - BitLocker disk encryption"
-    Write-Host "  13 - USB and removable media controls"
+    Write-Host "  13 - USB / device control"
     Write-Host "  14 - Disable unnecessary services"
-    Write-Host "  15 - Disable AutoRun and AutoPlay"
-    Write-Host "  16 - Audit policy and log retention"
-    Write-Host "  17 - Application control (AppLocker / WDAC)"
-    Write-Host "  18 - BIOS/UEFI and boot security"
+    Write-Host "  15 - Disable AutoRun/AutoPlay"
+    Write-Host "  16 - Advanced audit policy"
+    Write-Host "  17 - Application control (AppLocker)"
+    Write-Host "  18 - Secure Boot / UEFI configuration"
     Write-Host ""
-    Write-Host "B) Back"
+    Write-Host "B)  Back"
     Write-Host ""
 }
 
@@ -56,16 +56,16 @@ function Show-UserConfigMenu {
     Write-Host "            User Configuration" -ForegroundColor Green
     Write-Host "============================================="
     Write-Host ""
-    Write-Host "  19 - Restrict Control Panel and Settings"
-    Write-Host "  20 - Lock Start menu and taskbar"
-    Write-Host "  21 - Block cmd, PowerShell, regedit"
-    Write-Host "  22 - Screen saver lock and idle timeout"
-    Write-Host "  23 - Restrict drive visibility and access"
-    Write-Host "  24 - Harden browser settings"
-    Write-Host "  25 - Logon/logoff scripts"
-    Write-Host "  26 - Disable Microsoft Store features"
+    Write-Host "  19 - Restrict Control Panel & Settings"
+    Write-Host "  20 - Lock down Start menu & taskbar"
+    Write-Host "  21 - Block system tools (cmd, PowerShell, regedit)"
+    Write-Host "  22 - Screen-saver lock & idle timeout"
+    Write-Host "  23 - Restrict drive visibility"
+    Write-Host "  24 - Browser hardening"
+    Write-Host "  25 - Logon/logoff hygiene scripts"
+    Write-Host "  26 - Disable Microsoft Store"
     Write-Host ""
-    Write-Host "B) Back"
+    Write-Host "B)  Back"
     Write-Host ""
 }
 
@@ -75,68 +75,100 @@ function Show-UserConfigMenu {
 function Show-FileFolderMenu {
     Clear-Host
     Write-Host "============================================="
-    Write-Host "          File and Folder Structure" -ForegroundColor Green
+    Write-Host "        File & Folder Structure" -ForegroundColor Green
     Write-Host "============================================="
     Write-Host ""
-    Write-Host "  27 - Group-based access model (RBAC)"
-    Write-Host "  28 - Least privilege NTFS permissions"
-    Write-Host "  29 - Folder ACLs with controlled inheritance"
+    Write-Host "  27 - RBAC (role-based group model)"
+    Write-Host "  28 - Least-privilege NTFS baseline"
+    Write-Host "  29 - Folder ACLs with broken inheritance"
     Write-Host "  30 - File access auditing"
     Write-Host ""
-    Write-Host "B) Back"
+    Write-Host "B)  Back"
     Write-Host ""
 }
 
 ###############################################
-# PROCESS SELECTION
+# LOAD AND EXECUTE SELECTED SCRIPT
 ###############################################
-function Process-Selection {
+function Run-Module {
+    param([string]$ScriptName)
+
+    $FullPath = "$PSScriptRoot\src\$ScriptName"
+
+    if (Test-Path $FullPath) {
+        . $FullPath
+        return "Executed: $ScriptName"
+    }
+    else {
+        return "Module not found: $ScriptName"
+    }
+}
+
+###############################################
+# PROCESS COMPUTER CONFIGURATION SELECTION
+###############################################
+function Process-CC {
     param([string]$choice)
 
     switch ($choice) {
 
-        # COMPUTER CONFIG (1)
-        "1" {
-            . "$PSScriptRoot\src\1_Set-StrongLocalPasswordPolicy.ps1"
-            return "Applied: Strong local password policy"
-        }
+        "1"  { Run-Module "1_Set-StrongLocalPasswordPolicy.ps1" }
+        "2"  { Run-Module "2_Set-AccountLockoutPolicy.ps1" }
+        "3"  { Run-Module "3_LocalAdminGroupMinimization.ps1" }
+        "4"  { Run-Module "4_HardenBuiltInAccounts.ps1" }
+        "5"  { Run-Module "5_SecureLogonOptions.ps1" }
+        "6"  { Run-Module "6_StrongUACConfiguration.ps1" }
+        "7"  { Run-Module "7_EnforceAutomaticOSPatching.ps1" }
+        "8"  { Run-Module "8_EndpointProtection.ps1" }
+        "9"  { Run-Module "9_SmartScreenProtection.ps1" }
+        "10" { Run-Module "10_WindowsFirewallBaseline.ps1" }
+        "11" { Run-Module "11_SecureRemoteAccess.ps1" }
+        "12" { Run-Module "12_EnableBitLocker.ps1" }
+        "13" { Run-Module "13_USBDeviceControl.ps1" }
+        "14" { Run-Module "14_DisableUnnecessaryServices.ps1" }
+        "15" { Run-Module "15_DisableAutoRunAutoPlay.ps1" }
+        "16" { Run-Module "16_AdvancedAuditPolicy.ps1" }
+        "17" { Run-Module "17_AppLockerBaseline.ps1" }
+        "18" { Run-Module "18_SecureBoot_UEFI.ps1" }
 
-        # Other items not yet implemented
-        "2"  { return "Selected: Account lockout policy (not implemented yet)" }
-        "3"  { return "Selected: Minimize local Administrators group" }
-        "4"  { return "Selected: Harden built-in accounts" }
-        "5"  { return "Selected: Secure logon options" }
-        "6"  { return "Selected: UAC hardening" }
-        "7"  { return "Selected: Automatic Windows patching" }
-        "8"  { return "Selected: Endpoint protection" }
-        "9"  { return "Selected: SmartScreen protection" }
-        "10" { return "Selected: Windows Firewall baseline" }
-        "11" { return "Selected: Secure remote access" }
-        "12" { return "Selected: BitLocker encryption" }
-        "13" { return "Selected: USB control" }
-        "14" { return "Selected: Disable unnecessary services" }
-        "15" { return "Selected: Disable AutoRun/AutoPlay" }
-        "16" { return "Selected: Audit policy & logs" }
-        "17" { return "Selected: Application control" }
-        "18" { return "Selected: BIOS/UEFI boot security" }
+        default { "Invalid selection" }
+    }
+}
 
-        # USER CONFIG
-        "19" { return "Selected: Restrict Control Panel" }
-        "20" { return "Selected: Lock Start menu/taskbar" }
-        "21" { return "Selected: Block system tools" }
-        "22" { return "Selected: Screen saver & idle timeout" }
-        "23" { return "Selected: Restrict drive access" }
-        "24" { return "Selected: Browser hardening" }
-        "25" { return "Selected: Logon/logoff scripts" }
-        "26" { return "Selected: Disable Microsoft Store" }
+###############################################
+# PROCESS USER CONFIGURATION SELECTION
+###############################################
+function Process-UC {
+    param([string]$choice)
 
-        # FILE & FOLDER STRUCTURE
-        "27" { return "Selected: RBAC access model" }
-        "28" { return "Selected: Least privilege NTFS" }
-        "29" { return "Selected: Controlled folder inheritance" }
-        "30" { return "Selected: File access auditing" }
+    switch ($choice) {
+        "19" { Run-Module "19_RestrictControlPanel.ps1" }
+        "20" { Run-Module "20_LockStartMenu.ps1" }
+        "21" { Run-Module "21_BlockSystemTools.ps1" }
+        "22" { Run-Module "22_ScreensaverTimeout.ps1" }
+        "23" { Run-Module "23_RestrictDriveVisibility.ps1" }
+        "24" { Run-Module "24_BrowserHardening.ps1" }
+        "25" { Run-Module "25_LogonLogoffScripts.ps1" }
+        "26" { Run-Module "26_DisableMicrosoftStore.ps1" }
 
-        default { return "Invalid selection" }
+        default { "Invalid selection" }
+    }
+}
+
+###############################################
+# PROCESS FILE / FOLDER STRUCTURE SELECTION
+###############################################
+function Process-FS {
+    param([string]$choice)
+
+    switch ($choice) {
+
+        "27" { Run-Module "27_RBACModel.ps1" }
+        "28" { Run-Module "28_LeastPrivilegeNTFS.ps1" }
+        "29" { Run-Module "29_FolderInheritanceACL.ps1" }
+        "30" { Run-Module "30_FileAccessAuditing.ps1" }
+
+        default { "Invalid selection" }
     }
 }
 
@@ -156,7 +188,7 @@ while ($true) {
                 $sub = Read-Host "Select item"
                 if ($sub.ToUpper() -eq "B") { break }
 
-                $result = Process-Selection $sub
+                $result = Process-CC $sub
                 Write-Host "`n$result`n" -ForegroundColor Yellow
                 Pause
             }
@@ -168,7 +200,7 @@ while ($true) {
                 $sub = Read-Host "Select item"
                 if ($sub.ToUpper() -eq "B") { break }
 
-                $result = Process-Selection $sub
+                $result = Process-UC $sub
                 Write-Host "`n$result`n" -ForegroundColor Yellow
                 Pause
             }
@@ -180,13 +212,14 @@ while ($true) {
                 $sub = Read-Host "Select item"
                 if ($sub.ToUpper() -eq "B") { break }
 
-                $result = Process-Selection $sub
+                $result = Process-FS $sub
                 Write-Host "`n$result`n" -ForegroundColor Yellow
                 Pause
             }
         }
 
         "Q" { return }
+
         default {
             Write-Host "Invalid selection." -ForegroundColor Red
             Pause
