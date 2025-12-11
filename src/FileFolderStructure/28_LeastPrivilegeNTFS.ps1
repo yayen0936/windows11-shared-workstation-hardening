@@ -2,16 +2,16 @@ param()
 
 <#
 .SYNOPSIS
-    Applies strict NTFS permissions to the data root.
+    Applies strict NTFS baseline to the root data location.
 
 .DESCRIPTION
-    - Removes BUILTIN\Users and Everyone
-    - Grants full control only to SYSTEM and Administrators
+    - Removes Everyone/Users
+    - Grants FullControl only to SYSTEM + Administrators
 #>
 
-$DataRoot = "C:\Data"     # Change as needed
+$DataRoot = "D:\SecurePro"
 
-# Ensure folder exists
+# Create root folder if missing
 if (-not (Test-Path $DataRoot)) {
     New-Item -Path $DataRoot -ItemType Directory | Out-Null
 }
@@ -28,16 +28,14 @@ $acl.Access | ForEach-Object {
     }
 }
 
-# Add secure ACEs
+# Secure ACEs
 $rules = @(
     New-Object System.Security.AccessControl.FileSystemAccessRule("SYSTEM","FullControl","ContainerInherit, ObjectInherit","None","Allow"),
     New-Object System.Security.AccessControl.FileSystemAccessRule("Administrators","FullControl","ContainerInherit, ObjectInherit","None","Allow")
 )
 
-foreach ($rule in $rules) {
-    $acl.SetAccessRule($rule)
-}
+foreach ($rule in $rules) { $acl.SetAccessRule($rule) }
 
 Set-Acl -Path $DataRoot -AclObject $acl
 
-Write-Host "Least-privilege NTFS baseline applied to $DataRoot" -ForegroundColor Green
+Write-Host "Least-privilege baseline applied to $DataRoot" -ForegroundColor Green
