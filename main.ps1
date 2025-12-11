@@ -79,8 +79,8 @@ function Show-FileFolderMenu {
     Write-Host "============================================="
     Write-Host ""
     Write-Host "  27 - RBAC (role-based group model)"
-    Write-Host "  28 - Least-privilege NTFS baseline"
-    Write-Host "  29 - Folder ACLs with broken inheritance"
+    Write-Host "  28 - Break inheritance & remove inherited ACLs"
+    Write-Host "  29 - Apply least-privilege NTFS baseline"
     Write-Host "  30 - File access auditing"
     Write-Host ""
     Write-Host "B)  Back"
@@ -168,8 +168,8 @@ function Process-FS {
     switch ($choice) {
 
         "27" { Run-Module "FileFolderStructure" "27_RBACModel.ps1" }
-        "28" { Run-Module "FileFolderStructure" "28_LeastPrivilegeNTFS.ps1" }
-        "29" { Run-Module "FileFolderStructure" "29_FolderInheritanceACL.ps1" }
+        "28" { Run-Module "FileFolderStructure" "28_FolderInheritanceACL.ps1" }
+        "29" { Run-Module "FileFolderStructure" "29_LeastPrivilegeNTFS.ps1" }
         "30" { Run-Module "FileFolderStructure" "30_FileAccessAuditing.ps1" }
 
         default { "Invalid selection" }
