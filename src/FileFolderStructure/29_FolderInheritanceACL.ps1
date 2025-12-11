@@ -2,35 +2,38 @@ param()
 
 <#
 .SYNOPSIS
-    Applies RBAC-based NTFS permissions to department folders.
+    Applies folder-level RBAC ACLs with broken inheritance.
 
 .DESCRIPTION
-    - Breaks inheritance
-    - Applies RW/RO groups explicitly
+    Based on SecurePro folder structure and departmental groups.
 #>
 
-# -------------------------
-# DEFINE FOLDERS + GROUPS
-# -------------------------
+$Base = "D:\SecurePro"
+
 $Folders = @(
-    @{ Path="C:\Data\HR";        RW="Data_HR_RW";        RO="Data_HR_RO" },
-    @{ Path="C:\Data\Finance";   RW="Data_Finance_RW";   RO="Data_Finance_RO" }
+    @{ Path="$Base\1_Active_Jobs";                    RW=@("Estimating_Design","Operations_Sales"); RO=@("Finance_Administration") }
+
+    @{ Path="$Base\2_Company_Administration\Finance"; RW=@("Finance_Administration"); RO=@() }
+
+    @{ Path="$Base\2_Company_Administration\HR\Employee_Files"; RW=@(); RO=@() }   # Highly restricted
+
+    @{ Path="$Base\3_Sales_Marketing";                 RW=@("Operations_Sales"); RO=@("Estimating_Design") }
+
+    @{ Path="$Base\4_Resources";                       RW=@(); RO=@("Estimating_Design","Finance_Administration","Operations_Sales") }
 )
 
 foreach ($f in $Folders) {
 
-    # Ensure folder exists
-    if (-not (Test-Path $f.Path)) {
-        New-Item -Path $f.Path -ItemType Directory | Out-Null
-    }
+    if (-not (Test-Path $f.Path)) { New-Item -Path $f.Path -ItemType Directory | Out-Null }
 
     Write-Host "Applying ACLs to: $($f.Path)" -ForegroundColor Cyan
+
     $acl = Get-Acl $f.Path
 
-    # Break inheritance but copy existing ACEs (required for SYSTEM)
+    # Break inheritance
     $acl.SetAccessRuleProtection($true, $true)
 
-    # Remove all existing ACEs except SYSTEM and Administrators
+    # Remove all ACEs except SYSTEM + Administrators
     $acl.Access | Where-Object {
         $_.IdentityReference -notmatch "SYSTEM" -and
         $_.IdentityReference -notmatch "Administrators"
@@ -39,23 +42,23 @@ foreach ($f in $Folders) {
         $acl.RemoveAccessRule($_)
     }
 
-    # Add RW group
-    if ($f.RW) {
-        $ruleRW = New-Object System.Security.AccessControl.FileSystemAccessRule(
-            $f.RW, "Modify", "ContainerInherit, ObjectInherit", "None", "Allow"
+    # RW groups
+    foreach ($g in $f.RW) {
+        $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+            $g,"Modify","ContainerInherit, ObjectInherit","None","Allow"
         )
-        $acl.AddAccessRule($ruleRW)
+        $acl.AddAccessRule($rule)
     }
 
-    # Add RO group
-    if ($f.RO) {
-        $ruleRO = New-Object System.Security.AccessControl.FileSystemAccessRule(
-            $f.RO, "ReadAndExecute", "ContainerInherit, ObjectInherit", "None", "Allow"
+    # RO groups
+    foreach ($g in $f.RO) {
+        $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+            $g,"ReadAndExecute","ContainerInherit, ObjectInherit","None","Allow"
         )
-        $acl.AddAccessRule($ruleRO)
+        $acl.AddAccessRule($rule)
     }
 
     Set-Acl -Path $f.Path -AclObject $acl
 }
 
-Write-Host "RBAC folder ACLs applied." -ForegroundColor Green
+Write-Host "Departmental RBAC ACLs applied." -ForegroundColor Green
