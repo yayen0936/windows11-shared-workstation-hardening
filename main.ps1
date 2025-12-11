@@ -91,16 +91,19 @@ function Show-FileFolderMenu {
 # LOAD AND EXECUTE SELECTED SCRIPT
 ###############################################
 function Run-Module {
-    param([string]$ScriptName)
+    param(
+        [string]$Category,
+        [string]$ScriptName
+    )
 
-    $FullPath = "$PSScriptRoot\src\$ScriptName"
+    $FullPath = "$PSScriptRoot\src\$Category\$ScriptName"
 
     if (Test-Path $FullPath) {
         . $FullPath
-        return "Executed: $ScriptName"
+        return "Executed: $Category\$ScriptName"
     }
     else {
-        return "Module not found: $ScriptName"
+        return "Module not found: $FullPath"
     }
 }
 
@@ -112,24 +115,24 @@ function Process-CC {
 
     switch ($choice) {
 
-        "1"  { Run-Module "1_Set-StrongLocalPasswordPolicy.ps1" }
-        "2"  { Run-Module "2_Set-AccountLockoutPolicy.ps1" }
-        "3"  { Run-Module "3_LocalAdminGroupMinimization.ps1" }
-        "4"  { Run-Module "4_HardenBuiltInAccounts.ps1" }
-        "5"  { Run-Module "5_SecureLogonOptions.ps1" }
-        "6"  { Run-Module "6_StrongUACConfiguration.ps1" }
-        "7"  { Run-Module "7_EnforceAutomaticOSPatching.ps1" }
-        "8"  { Run-Module "8_EndpointProtection.ps1" }
-        "9"  { Run-Module "9_SmartScreenProtection.ps1" }
-        "10" { Run-Module "10_WindowsFirewallBaseline.ps1" }
-        "11" { Run-Module "11_SecureRemoteAccess.ps1" }
-        "12" { Run-Module "12_EnableBitLocker.ps1" }
-        "13" { Run-Module "13_USBDeviceControl.ps1" }
-        "14" { Run-Module "14_DisableUnnecessaryServices.ps1" }
-        "15" { Run-Module "15_DisableAutoRunAutoPlay.ps1" }
-        "16" { Run-Module "16_AdvancedAuditPolicy.ps1" }
-        "17" { Run-Module "17_AppLockerBaseline.ps1" }
-        "18" { Run-Module "18_SecureBoot_UEFI.ps1" }
+        "1"  { Run-Module "ComputerConfiguration" "1_Set-StrongLocalPasswordPolicy.ps1" }
+        "2"  { Run-Module "ComputerConfiguration" "2_Set-AccountLockoutPolicy.ps1" }
+        "3"  { Run-Module "ComputerConfiguration" "3_LocalAdminGroupMinimization.ps1" }
+        "4"  { Run-Module "ComputerConfiguration" "4_HardenBuiltInAccounts.ps1" }
+        "5"  { Run-Module "ComputerConfiguration" "5_SecureLogonOptions.ps1" }
+        "6"  { Run-Module "ComputerConfiguration" "6_StrongUACConfiguration.ps1" }
+        "7"  { Run-Module "ComputerConfiguration" "7_EnforceAutomaticOSPatching.ps1" }
+        "8"  { Run-Module "ComputerConfiguration" "8_EndpointProtection.ps1" }
+        "9"  { Run-Module "ComputerConfiguration" "9_SmartScreenProtection.ps1" }
+        "10" { Run-Module "ComputerConfiguration" "10_WindowsFirewallBaseline.ps1" }
+        "11" { Run-Module "ComputerConfiguration" "11_SecureRemoteAccess.ps1" }
+        "12" { Run-Module "ComputerConfiguration" "12_EnableBitLocker.ps1" }
+        "13" { Run-Module "ComputerConfiguration" "13_USBDeviceControl.ps1" }
+        "14" { Run-Module "ComputerConfiguration" "14_DisableUnnecessaryServices.ps1" }
+        "15" { Run-Module "ComputerConfiguration" "15_DisableAutoRunAutoPlay.ps1" }
+        "16" { Run-Module "ComputerConfiguration" "16_AdvancedAuditPolicy.ps1" }
+        "17" { Run-Module "ComputerConfiguration" "17_AppLockerBaseline.ps1" }
+        "18" { Run-Module "ComputerConfiguration" "18_SecureBoot_UEFI.ps1" }
 
         default { "Invalid selection" }
     }
@@ -142,14 +145,15 @@ function Process-UC {
     param([string]$choice)
 
     switch ($choice) {
-        "19" { Run-Module "19_RestrictControlPanel.ps1" }
-        "20" { Run-Module "20_LockStartMenu.ps1" }
-        "21" { Run-Module "21_BlockSystemTools.ps1" }
-        "22" { Run-Module "22_ScreensaverTimeout.ps1" }
-        "23" { Run-Module "23_RestrictDriveVisibility.ps1" }
-        "24" { Run-Module "24_BrowserHardening.ps1" }
-        "25" { Run-Module "25_LogonLogoffScripts.ps1" }
-        "26" { Run-Module "26_DisableMicrosoftStore.ps1" }
+
+        "19" { Run-Module "UserConfiguration" "19_RestrictControlPanel.ps1" }
+        "20" { Run-Module "UserConfiguration" "20_LockStartMenu.ps1" }
+        "21" { Run-Module "UserConfiguration" "21_BlockSystemTools.ps1" }
+        "22" { Run-Module "UserConfiguration" "22_ScreensaverTimeout.ps1" }
+        "23" { Run-Module "UserConfiguration" "23_RestrictDriveVisibility.ps1" }
+        "24" { Run-Module "UserConfiguration" "24_BrowserHardening.ps1" }
+        "25" { Run-Module "UserConfiguration" "25_LogonLogoffScripts.ps1" }
+        "26" { Run-Module "UserConfiguration" "26_DisableMicrosoftStore.ps1" }
 
         default { "Invalid selection" }
     }
@@ -163,10 +167,10 @@ function Process-FS {
 
     switch ($choice) {
 
-        "27" { Run-Module "27_RBACModel.ps1" }
-        "28" { Run-Module "28_LeastPrivilegeNTFS.ps1" }
-        "29" { Run-Module "29_FolderInheritanceACL.ps1" }
-        "30" { Run-Module "30_FileAccessAuditing.ps1" }
+        "27" { Run-Module "FileFolderStructure" "27_RBACModel.ps1" }
+        "28" { Run-Module "FileFolderStructure" "28_LeastPrivilegeNTFS.ps1" }
+        "29" { Run-Module "FileFolderStructure" "29_FolderInheritanceACL.ps1" }
+        "30" { Run-Module "FileFolderStructure" "30_FileAccessAuditing.ps1" }
 
         default { "Invalid selection" }
     }
