@@ -2,63 +2,55 @@ param()
 
 <#
 .SYNOPSIS
-    Applies folder-level RBAC ACLs with broken inheritance.
+    Breaks inheritance and removes all inherited NTFS permissions
+    on the SecurePro folder structure.
 
 .DESCRIPTION
-    Based on SecurePro folder structure and departmental groups.
+    - Disables inherited permissions
+    - Removes inherited ACEs completely (no copy)
+    - Retains SYSTEM and Administrators only
+    - Prepares folders for least-privilege NTFS baseline (script 29)
 #>
 
 $Base = "D:\SecurePro"
 
+# List of folders that must have inheritance removed
 $Folders = @(
-    @{ Path="$Base\1_Active_Jobs";                    RW=@("Estimating_Design","Operations_Sales"); RO=@("Finance_Administration") }
-
-    @{ Path="$Base\2_Company_Administration\Finance"; RW=@("Finance_Administration"); RO=@() }
-
-    @{ Path="$Base\2_Company_Administration\HR\Employee_Files"; RW=@(); RO=@() }   # Highly restricted
-
-    @{ Path="$Base\3_Sales_Marketing";                 RW=@("Operations_Sales"); RO=@("Estimating_Design") }
-
-    @{ Path="$Base\4_Resources";                       RW=@(); RO=@("Estimating_Design","Finance_Administration","Operations_Sales") }
+    "$Base",
+    "$Base\1_Active_Jobs",
+    "$Base\2_Company_Administration",
+    "$Base\2_Company_Administration\Finance",
+    "$Base\2_Company_Administration\HR",
+    "$Base\2_Company_Administration\HR\Employee_Files",
+    "$Base\3_Sales_Marketing",
+    "$Base\4_Resources",
+    "$Base\5_Archives"
 )
 
-foreach ($f in $Folders) {
+foreach ($Folder in $Folders) {
 
-    if (-not (Test-Path $f.Path)) { New-Item -Path $f.Path -ItemType Directory | Out-Null }
+    if (-not (Test-Path $Folder)) {
+        New-Item -Path $Folder -ItemType Directory | Out-Null
+    }
 
-    Write-Host "Applying ACLs to: $($f.Path)" -ForegroundColor Cyan
+    Write-Host "Breaking inheritance on: $Folder" -ForegroundColor Cyan
 
-    $acl = Get-Acl $f.Path
+    $acl = Get-Acl $Folder
 
-    # Break inheritance
-    $acl.SetAccessRuleProtection($true, $true)
+    # Disable inheritance and remove inherited ACEs
+    $acl.SetAccessRuleProtection($true, $false)
 
     # Remove all ACEs except SYSTEM + Administrators
-    $acl.Access | Where-Object {
-        $_.IdentityReference -notmatch "SYSTEM" -and
-        $_.IdentityReference -notmatch "Administrators"
-    } | ForEach-Object {
-        Write-Host "Removing ACL: $($_.IdentityReference)"
-        $acl.RemoveAccessRule($_)
+    foreach ($ace in $acl.Access) {
+        if ($ace.IdentityReference -notmatch "SYSTEM" -and
+            $ace.IdentityReference -notmatch "Administrators") {
+
+            Write-Host "Removing ACE: $($ace.IdentityReference)"
+            $acl.RemoveAccessRule($ace) | Out-Null
+        }
     }
 
-    # RW groups
-    foreach ($g in $f.RW) {
-        $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-            $g,"Modify","ContainerInherit, ObjectInherit","None","Allow"
-        )
-        $acl.AddAccessRule($rule)
-    }
-
-    # RO groups
-    foreach ($g in $f.RO) {
-        $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-            $g,"ReadAndExecute","ContainerInherit, ObjectInherit","None","Allow"
-        )
-        $acl.AddAccessRule($rule)
-    }
-
-    Set-Acl -Path $f.Path -AclObject $acl
+    Set-Acl -Path $Folder -AclObject $acl
 }
 
-Write-Host "Departmental RBAC ACLs applied." -ForegroundColor Green
+Write-Host "Folder inheritance successfully removed on all target folders." -ForegroundColor Green
