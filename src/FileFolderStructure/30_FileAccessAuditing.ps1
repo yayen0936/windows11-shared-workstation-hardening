@@ -5,30 +5,22 @@ param()
     Enables NTFS auditing for sensitive folders.
 
 .DESCRIPTION
-    Audits:
-    - Read
-    - Write
-    - Delete
-
-    Must be combined with:
-    - CC16 Advanced Audit Policy
+    Applies audit rules for Finance and HR Employee_Files.
 #>
 
-# -------------------------
-# DEFINE AUDIT TARGETS
-# -------------------------
-$AuditFolders = @(
-    "C:\Data\HR",
-    "C:\Data\Finance"
+$AuditTargets = @(
+    "D:\SecurePro\2_Company_Administration\Finance",
+    "D:\SecurePro\2_Company_Administration\HR\Employee_Files"
 )
 
-foreach ($folder in $AuditFolders) {
-
-    Write-Host "Applying file access auditing to: $folder" -ForegroundColor Cyan
+foreach ($folder in $AuditTargets) {
 
     if (-not (Test-Path $folder)) { continue }
 
+    Write-Host "Applying auditing to: $folder" -ForegroundColor Cyan
+
     $acl = Get-Acl $folder
+
     $auditRule = New-Object System.Security.AccessControl.FileSystemAuditRule(
         "Everyone",
         "Read, Write, Delete",
@@ -41,4 +33,4 @@ foreach ($folder in $AuditFolders) {
     Set-Acl -Path $folder -AclObject $acl
 }
 
-Write-Host "NTFS auditing applied to sensitive folders." -ForegroundColor Green
+Write-Host "Auditing applied to critical folders." -ForegroundColor Green
