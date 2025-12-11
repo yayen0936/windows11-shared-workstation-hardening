@@ -10,7 +10,6 @@ param()
 #>
 
 $DataRoot = "D:\SecurePro"
-
 # Create root folder if missing
 if (-not (Test-Path $DataRoot)) {
     New-Item -Path $DataRoot -ItemType Directory | Out-Null
@@ -24,17 +23,27 @@ $acl = Get-Acl $DataRoot
 $acl.Access | ForEach-Object {
     if ($_.IdentityReference -match "Everyone" -or $_.IdentityReference -match "Users") {
         Write-Host "Removing ACL: $($_.IdentityReference)"
-        $acl.RemoveAccessRule($_)
+        $acl.RemoveAccessRule($_) | Out-Null
     }
 }
 
-# Secure ACEs
-$rules = @(
-    New-Object System.Security.AccessControl.FileSystemAccessRule("SYSTEM","FullControl","ContainerInherit, ObjectInherit","None","Allow"),
-    New-Object System.Security.AccessControl.FileSystemAccessRule("Administrators","FullControl","ContainerInherit, ObjectInherit","None","Allow")
+# Add secure baseline ACEs
+$entries = @(
+    @{ Identity="NT AUTHORITY\SYSTEM"; Rights="FullControl" }
+    @{ Identity="BUILTIN\Administrators"; Rights="FullControl" }
 )
 
-foreach ($rule in $rules) { $acl.SetAccessRule($rule) }
+foreach ($entry in $entries) {
+    $rule = New-Object System.Security.AccessControl.FileSystemAccessRule (
+        [System.Security.Principal.NTAccount]$entry.Identity,
+        [System.Security.AccessControl.FileSystemRights]::$($entry.Rights),
+        [System.Security.AccessControl.InheritanceFlags]"ContainerInherit, ObjectInherit",
+        [System.Security.AccessControl.PropagationFlags]::None,
+        [System.Security.AccessControl.AccessControlType]::Allow
+    )
+
+    $acl.SetAccessRule($rule)
+}
 
 Set-Acl -Path $DataRoot -AclObject $acl
 
