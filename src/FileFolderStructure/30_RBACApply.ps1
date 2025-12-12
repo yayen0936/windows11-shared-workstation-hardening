@@ -5,8 +5,8 @@ param()
     Applies department-based RBAC permissions to the SecurePro folder structure.
 
 .DESCRIPTION
-    - Assigns Read/Write (Modify) and Read-Only (ReadAndExecute) permissions
-      to departmental groups based on the business access model.
+    - Assigns Modify (RW) and ReadAndExecute (RO) permissions
+      to departmental groups based on the RBAC model.
     - All permissions are explicit because inheritance was removed earlier.
 #>
 
@@ -26,8 +26,8 @@ $Folders = @(
     },
     @{
         Path = "$Base\2_Company_Administration\HR\Employee_Files"
-        RW   = @()   # Highly restricted area
-        RO   = @()   # Only SYSTEM & Admins should have access
+        RW   = @()
+        RO   = @()
     },
     @{
         Path = "$Base\3_Sales_Marketing"
@@ -48,19 +48,16 @@ foreach ($f in $Folders) {
     $folderPath = $f.Path
 
     if (-not (Test-Path $folderPath)) {
-        Write-Host "Missing folder — creating: $folderPath"
+        Write-Host "Missing folder - creating: $folderPath"
         New-Item -Path $folderPath -ItemType Directory | Out-Null
     }
 
     Write-Host "`nProcessing: $folderPath" -ForegroundColor Yellow
-    
+
     $acl = Get-Acl $folderPath
 
-    # ----------------------------
     # APPLY READ/WRITE PERMISSIONS
-    # ----------------------------
     foreach ($group in $f.RW) {
-
         $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
             $group,
             "Modify",
@@ -68,16 +65,12 @@ foreach ($f in $Folders) {
             "None",
             "Allow"
         )
-
-        Write-Host "  [+] RW  → $group"
+        Write-Host "  [RW] $group"
         $acl.AddAccessRule($rule)
     }
 
-    # ----------------------------
     # APPLY READ-ONLY PERMISSIONS
-    # ----------------------------
     foreach ($group in $f.RO) {
-        
         $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
             $group,
             "ReadAndExecute",
@@ -85,8 +78,7 @@ foreach ($f in $Folders) {
             "None",
             "Allow"
         )
-
-        Write-Host "  [+] RO  → $group"
+        Write-Host "  [RO] $group"
         $acl.AddAccessRule($rule)
     }
 
