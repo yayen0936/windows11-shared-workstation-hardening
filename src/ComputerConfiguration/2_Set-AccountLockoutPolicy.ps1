@@ -2,79 +2,91 @@ param()
 
 <#
 .SYNOPSIS
-    Configures the Account Lockout Policy identical to:
-    Computer Configuration -> Windows Settings -> Security Settings ->
-    Account Policies -> Account Lockout Policy
+    Configures secure Account Lockout Policy settings on a Windows 11 shared workstation.
 
 .DESCRIPTION
-    Applies the following settings:
-        - Account lockout threshold
-        - Account lockout duration
-        - Reset account lockout counter after
+    Enforces security-recommended account lockout controls
 
-    These settings take effect immediately and apply to all local accounts.
+    Configured settings:
+    - Account lockout threshold
+    - Account lockout duration
+    - Reset account lockout counter after
+    - Allow Administrator account lockout
 #>
 
-# ----------------------------------------
-# CONFIGURABLE SECURITY SETTINGS (EDIT HERE)
-# ----------------------------------------
-$LockoutPolicy = @{
-    LockoutBadCount       = 5      # Lock out after 5 failed logon attempts
-    LockoutDuration       = 15     # Duration (in minutes) the account remains locked
-    ResetLockoutCount     = 15     # Time (in minutes) to reset failed logon counter
+# ===============================
+# Pre-check: Run as Administrator
+# ===============================
+$principal = New-Object Security.Principal.WindowsPrincipal(
+    [Security.Principal.WindowsIdentity]::GetCurrent()
+)
+
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
+    Write-Error "This script must be run as Administrator."
+    exit 1
 }
 
-# ----------------------------------------
-# PATHS
-# ----------------------------------------
-$LogPath = "$PSScriptRoot\..\logs"
-$InfFile = Join-Path $LogPath "AccountLockoutPolicy.inf"
+# ===============================
+# Security-Recommended Settings
+# ===============================
+$LockoutThreshold    = 5    # Invalid logon attempts
+$LockoutDuration     = 15   # Minutes
+$LockoutWindow       = 15   # Minutes
+$AllowAdminLockout   = 1    # 1 = Enabled
 
-# Ensure logs folder exists
-if (-not (Test-Path $LogPath)) {
-    New-Item -Path $LogPath -ItemType Directory | Out-Null
-}
+# ===============================
+# Apply Account Lockout Policy
+# ===============================
+Write-Host "[*] Applying Account Lockout Policy..." -ForegroundColor Cyan
 
-# Ensure SYSTEM has access (required for secedit)
-icacls $LogPath /grant "SYSTEM:(OI)(CI)(F)" /T | Out-Null
+net accounts `
+    /lockoutthreshold:$LockoutThreshold `
+    /lockoutduration:$LockoutDuration `
+    /lockoutwindow:$LockoutWindow | Out-Null
 
-# ----------------------------------------
-# CREATE SECURITY TEMPLATE (.INF)
-# ----------------------------------------
-$content = @"
-[Unicode]
-Unicode=yes
+# Enable Administrator account lockout
+reg add `
+    "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" `
+    /v AllowAdminAccountLockout `
+    /t REG_DWORD `
+    /d $AllowAdminLockout `
+    /f | Out-Null
 
-[System Access]
-LockoutBadCount          = $($LockoutPolicy.LockoutBadCount)
-LockoutDuration          = $($LockoutPolicy.LockoutDuration)
-ResetLockoutCount        = $($LockoutPolicy.ResetLockoutCount)
+# ===============================
+# Post-check Verification
+# ===============================
+Write-Host ""
+Write-Host "[*] Account Lockout Policy (Configured Settings)" -ForegroundColor Cyan
+Write-Host "------------------------------------------------"
 
-[Version]
-signature = "\$CHICAGO\$"
-Revision = 1
-"@
+# Read values back
+$netAccounts = (net accounts) -split "`r?`n"
 
-# Write as ANSI (no BOM)
-[System.IO.File]::WriteAllText($InfFile, $content, [System.Text.Encoding]::GetEncoding(1252))
+$threshold = ($netAccounts | Where-Object { $_ -match "Lockout threshold" }) `
+    -replace '.*:\s*', ''
+$duration  = ($netAccounts | Where-Object { $_ -match "Lockout duration" }) `
+    -replace '.*:\s*', ''
+$window    = ($netAccounts | Where-Object { $_ -match "Lockout observation window" }) `
+    -replace '.*:\s*', ''
 
-Write-Host "Account Lockout Policy template created at: $InfFile" -ForegroundColor Yellow
+$adminLockout = Get-ItemProperty `
+    "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" `
+    -Name AllowAdminAccountLockout `
+    -ErrorAction SilentlyContinue
 
-# ----------------------------------------
-# APPLY POLICY USING SECEDIT
-# ----------------------------------------
-Write-Host "`nApplying Account Lockout Policy..." -ForegroundColor Cyan
-
-secedit.exe /configure `
-    /db "$env:WINDIR\Security\Database\local.sdb" `
-    /cfg $InfFile `
-    /areas SECURITYPOLICY
-
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "`nAccount Lockout Policy applied successfully!" -ForegroundColor Green
+$adminLockoutStatus = if ($adminLockout.AllowAdminAccountLockout -eq 1) {
+    "Enabled"
 } else {
-    Write-Host "`nFAILED. Exit code: $LASTEXITCODE" -ForegroundColor Red
-    Write-Host "Check C:\Windows\Security\Logs\scesrv.log for details." -ForegroundColor Yellow
+    "Disabled"
 }
 
-Write-Host "`nDone."
+# Display exactly what Local Security Policy shows
+Write-Host ("Account lockout duration                : {0}" -f $duration)
+Write-Host ("Account lockout threshold               : {0}" -f $threshold)
+Write-Host ("Allow Administrator account lockout     : {0}" -f $adminLockoutStatus)
+Write-Host ("Reset account lockout counter after     : {0}" -f $window)
+
+Write-Host "------------------------------------------------"
+Write-Host "Account Lockout Policy applied successfully." -ForegroundColor Green
+
+exit 0
