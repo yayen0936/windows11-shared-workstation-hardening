@@ -2,50 +2,88 @@ param()
 
 <#
 .SYNOPSIS
-    Minimizes members of the local Administrators group.
+    Minimizes membership of the local Administrators group.
 
 .DESCRIPTION
-    Ensures only approved admin accounts remain in the local Administrators
-    group. Removes all unapproved or standard users.
-
-    Equivalent to:
-    Computer Configuration ->
-        Windows Settings ->
-            Security Settings ->
-                Local Policies ->
-                    User Rights Assignment ->
-                        "Administrators"
+    Ensures that only explicitly approved administrative accounts remain
+    members of the local Administrators group, enforcing least privilege
+    on a Windows 11 shared workstation.
 #>
 
-# -------------------------
-# CONFIGURE APPROVED ADMINS
-# -------------------------
-$ApprovedAdmins = @(
-    "Administrator",       # Built-in admin (optional)
-    "yayen-admin"          # Example - replace with your real admin
+# ===============================
+# Pre-check: Run as Administrator
+# ===============================
+$principal = New-Object Security.Principal.WindowsPrincipal(
+    [Security.Principal.WindowsIdentity]::GetCurrent()
 )
 
-# -------------------------
-# GET CURRENT MEMBERS
-# -------------------------
-$current = Get-LocalGroupMember -Group "Administrators"
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
+    Write-Error "This script must be run as Administrator."
+    exit 1
+}
 
-foreach ($member in $current) {
-    if ($ApprovedAdmins -notcontains $member.Name) {
-        Write-Host "Removing unauthorized admin: $($member.Name)" -ForegroundColor Yellow
-        Remove-LocalGroupMember -Group "Administrators" -Member $member.Name -ErrorAction SilentlyContinue
+# ===============================
+# Configure Approved Admin Accounts
+# ===============================
+# Administrator is approved here, but hardened/disabled in CC4
+$ApprovedAdmins = @(
+    "Administrator",
+    "bbojangles"
+)
+
+$ComputerName = $env:COMPUTERNAME
+$ApprovedAdminFQNs = $ApprovedAdmins | ForEach-Object { "$ComputerName\$_" }
+
+# ===============================
+# Remove Unauthorized Administrators
+# ===============================
+$currentMembers = Get-LocalGroupMember -Group "Administrators"
+
+foreach ($member in $currentMembers) {
+
+    if ($ApprovedAdminFQNs -notcontains $member.Name) {
+        Write-Host "Removing unauthorized administrator: $($member.Name)" `
+            -ForegroundColor Yellow
+
+        Remove-LocalGroupMember `
+            -Group "Administrators" `
+            -Member $member.Name `
+            -ErrorAction SilentlyContinue
     }
 }
 
-# -------------------------
-# ADD APPROVED ADMINS BACK
-# -------------------------
-foreach ($admin in $ApprovedAdmins) {
-    try {
-        Add-LocalGroupMember -Group "Administrators" -Member $admin -ErrorAction Stop
-        Write-Host "Ensured authorized admin: $admin"
+# ===============================
+# Ensure Approved Admins Are Present
+# ===============================
+foreach ($adminFQN in $ApprovedAdminFQNs) {
+
+    if (-not (Get-LocalGroupMember -Group "Administrators" |
+        Where-Object { $_.Name -eq $adminFQN })) {
+
+        try {
+            Add-LocalGroupMember -Group "Administrators" -Member $adminFQN -ErrorAction Stop
+            Write-Host "Ensured authorized administrator: $adminFQN" -ForegroundColor Green
+        }
+        catch {
+            Write-Warning "Failed to ensure admin membership for: $adminFQN"
+        }
     }
-    catch { }
 }
 
-Write-Host "Local Administrators group minimized successfully!" -ForegroundColor Green
+# ===============================
+# Post-check Verification
+# ===============================
+Write-Host ""
+Write-Host "[*] Final Local Administrators Group Membership:" -ForegroundColor Cyan
+Write-Host "------------------------------------------------"
+
+Get-LocalGroupMember -Group "Administrators" |
+    Select-Object Name, ObjectClass |
+    ForEach-Object {
+        Write-Host ("{0,-35} {1}" -f $_.Name, $_.ObjectClass)
+    }
+
+Write-Host "------------------------------------------------"
+Write-Host "Local Administrators group minimized successfully." -ForegroundColor Green
+
+exit 0
