@@ -5,9 +5,11 @@ param()
     Secures RDP and WinRM (remote access).
 
 .DESCRIPTION
-    - Disable RDP unless explicitly required
-    - Restrict RDP to Administrators only
-    - Ensure NLA enforced
+    Reduces the remote access attack surface by disabling Remote Desktop
+    Protocol (RDP) and Windows Remote Management (WinRM) when not required.
+    By limiting or disabling remote management services, this control helps
+    prevent unauthorized remote access, credential abuse, and lateral
+    movement attacks on the workstation.
 #>
 
 # Disable RDP by default
@@ -17,7 +19,11 @@ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" 
 # Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" `
 #                  -Name "UserAuthentication" -Value 1
 
-# Disable WinRM unless needed
+# Disable WinRM remoting
 Disable-PSRemoting -Force
+
+# Stop and disable WinRM service
+Stop-Service WinRM -Force -ErrorAction SilentlyContinue
+Set-Service WinRM -StartupType Disabled
 
 Write-Host "Remote access (RDP/WinRM) secured." -ForegroundColor Green
