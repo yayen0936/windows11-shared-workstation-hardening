@@ -6,18 +6,12 @@ param()
 
 .DESCRIPTION
     - Disable Guest
-    - Rename Administrator (optional)
-    - Optionally disable Administrator
-
-    Equivalent to:
-    Local Security Policy ->
-        Security Settings ->
-            Local Policies ->
-                Security Options
+    - Disable built-in Administrator
+    - Rename built-in Administrator
 #>
 
-$NewAdminName = "LocalAdminRenamed"   # Change as needed
-$DisableAdministrator = $false        # Set to $true if you want to disable it
+$NewAdminName = "sp-recovery"         # Change as needed
+$DisableAdministrator = $true         # Required for this control
 
 Write-Host "Disabling Guest account..." -ForegroundColor Cyan
 Disable-LocalUser -Name "Guest" -ErrorAction SilentlyContinue
@@ -27,7 +21,10 @@ Rename-LocalUser -Name "Administrator" -NewName $NewAdminName -ErrorAction Silen
 
 if ($DisableAdministrator -eq $true) {
     Write-Host "Disabling built-in Administrator account..." -ForegroundColor Red
+
+    # Disable whichever name currently exists (covers rename success/failure)
     Disable-LocalUser -Name $NewAdminName -ErrorAction SilentlyContinue
+    Disable-LocalUser -Name "Administrator" -ErrorAction SilentlyContinue
 }
 
 Write-Host "Built-in accounts hardened successfully!" -ForegroundColor Green
