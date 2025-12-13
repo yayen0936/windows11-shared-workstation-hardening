@@ -5,16 +5,12 @@ param()
     Enables SmartScreen and reputation-based protection.
 
 .DESCRIPTION
-    Configures Windows SmartScreen for:
-    - Microsoft Edge
-    - Windows apps
-    - Untrusted executable warnings
-
-    GPO equivalent:
-    Computer Configuration ->
-        Administrative Templates ->
-            Windows Components ->
-                Windows Defender SmartScreen
+    Enforces SmartScreen and reputation-based protections for Windows and
+    Microsoft Edge to warn users when launching untrusted or potentially
+    malicious applications and websites. These controls help prevent users
+    from executing unknown or low-reputation content, reducing the risk of
+    malware infection and social-engineering-based attacks on shared
+    workstations.
 #>
 
 $SmartScreenPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
