@@ -5,13 +5,6 @@ param()
     Configures secure logon behavior.
 
 .DESCRIPTION
-    Equivalent to:
-    Computer Configuration ->
-        Windows Settings ->
-            Security Settings ->
-                Local Policies ->
-                    Security Options
-
     Implements:
     - CTRL+ALT+DEL required
     - Hide last logged-on username
