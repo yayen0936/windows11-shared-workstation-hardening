@@ -5,12 +5,12 @@ param()
     Configures User Account Control (UAC) hardening.
 
 .DESCRIPTION
-    Equivalent to:
-    Local Security Policy ->
-        Security Settings ->
-            Local Policies ->
-                Security Options ->
-                    User Account Control
+    Enforces a hardened User Account Control (UAC) configuration by requiring
+    secure elevation prompts for administrators, denying elevation requests
+    from standard users, and displaying prompts on the secure desktop. These
+    settings reduce the risk of unauthorized privilege escalation and ensure
+    that administrative actions are deliberate, authenticated, and protected
+    from spoofing or malware interference.
 #>
 
 $UACPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
