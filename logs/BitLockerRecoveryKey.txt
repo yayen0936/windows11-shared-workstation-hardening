@@ -1,0 +1,7 @@
+﻿ComputerName: SECUREPRO
+Drive: C:
+Date: 2025-12-13 10:39:09
+VolumeStatus: FullyDecrypted
+ProtectionStatus: Off
+RecoveryPassword: 002497-240702-041712-624668-133408-658482-079035-538098
+KeyProtectorId: {4D6406F5-7279-46FC-BAFA-1BCDCA3AB53C}
