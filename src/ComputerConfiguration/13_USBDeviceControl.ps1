@@ -2,25 +2,22 @@ param()
 
 <#
 .SYNOPSIS
-    Controls USB storage access.
-
-.DESCRIPTION
-    Blocks USB storage write and/or read access.
-    Prevents data exfiltration and malware via USB.
-
-    GPO equivalent:
-    Computer Configuration ->
-        Administrative Templates ->
-            System ->
-                Removable Storage Access
+    Blocks write access to removable disks (USB flash drives typically fall here).
 #>
 
-$USBPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices"
+$ErrorActionPreference = 'Stop'
 
-# Block USB write
-Set-ItemProperty -Path $USBPath -Name "Deny_Write" -Value 1 -Force
+$BasePath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices"
+$RemovableDisksGuid = "{53f5630d-b6bf-11d0-94f2-00a0c91efb8b}"
+$PolicyPath = Join-Path $BasePath $RemovableDisksGuid
 
-# Block USB read (optional)
-# Set-ItemProperty -Path $USBPath -Name "Deny_Read" -Value 1 -Force
+# Ensure path exists
+if (-not (Test-Path $PolicyPath)) {
+    New-Item -Path $PolicyPath -Force | Out-Null
+}
 
-Write-Host "USB and removable media restrictions applied." -ForegroundColor Green
+# Set Deny_Write = 1
+New-ItemProperty -Path $PolicyPath -Name "Deny_Write" -Value 1 -PropertyType DWord -Force | Out-Null
+
+Write-Host "Removable Disks: Deny write access has been set (Deny_Write=1)." -ForegroundColor Green
+Write-Host "IMPORTANT: Unplug/replug the USB drive, then test writing again." -ForegroundColor Yellow
