@@ -5,13 +5,11 @@ param()
     Configures Microsoft Defender protection baselines.
 
 .DESCRIPTION
-    Equivalent to:
-    Windows Security -> Virus & Threat Protection settings
-
-    - Real-time protection
-    - Cloud protection
-    - Automatic sample submission
-    - Scheduled scanning
+    Enforces a baseline endpoint protection configuration for Microsoft Defender
+    by enabling real-time malware protection, cloud-delivered threat intelligence,
+    automatic sample submission, and scheduled scanning. These settings strengthen
+    the system’s ability to detect, prevent, and respond to malicious activity,
+    reducing the risk of malware compromise on shared workstations.
 #>
 
 # Enable Defender features
