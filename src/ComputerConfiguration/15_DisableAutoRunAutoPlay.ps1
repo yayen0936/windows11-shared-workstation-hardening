@@ -2,10 +2,15 @@ param()
 
 <#
 .SYNOPSIS
-    Disables AutoRun and AutoPlay.
+    Disables AutoRun and AutoPlay for removable media.
 
 .DESCRIPTION
-    Prevents drive-by malware infections.
+    Hardens the SecurePro Windows 11 shared workstation by preventing
+    automatic execution of content from USB, CD/DVD, and other removable drives.
+
+    This reduces the risk of:
+    - Malware introduction from removable media
+    - Drive-by execution when external devices are connected
 #>
 
 $PolicyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
