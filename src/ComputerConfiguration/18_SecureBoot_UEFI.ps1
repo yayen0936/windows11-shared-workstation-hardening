@@ -2,11 +2,15 @@ param()
 
 <#
 .SYNOPSIS
-    Applies OS-level Secure Boot and boot protections.
+    Applies OS-level boot configuration hardening.
 
 .DESCRIPTION
-    - Ensures Secure Boot is enabled
-    - Disables boot from external devices at OS level
+    Verifies whether Secure Boot is enabled via UEFI and applies Windows boot
+    configuration settings that reduce interactive boot options (e.g., hiding
+    the boot menu) to make unauthorized boot-time tampering more difficult.
+    Note: Secure Boot enforcement and preventing boot from external media are
+    primarily firmware (BIOS/UEFI) controls and must be configured manually
+    outside the operating system.
 #>
 
 if ((Confirm-SecureBootUEFI) -eq $false) {
