@@ -22,10 +22,9 @@ if (-not ([Security.Principal.WindowsPrincipal] `
 
 $Base = "D:\SecurePro"
 
-# RBAC DEFINITIONS (updated to match your matrix)
+# RBAC DEFINITIONS
 $Folders = @(
-    # Root
-    @{ Path = "$Base"; RW=@(); RO=@(); FULL=@("IT") },
+    @{ Path = "$Base"; RW=@(); RO=@("Estimating_Design","Finance_Administration","Operations_Sales"); FULL=@("IT") },
 
     # Active Jobs
     @{ Path = "$Base\1_Active_Jobs"; RW=@("Estimating_Design","Operations_Sales"); RO=@("Finance_Administration"); FULL=@("IT") },
